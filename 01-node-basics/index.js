@@ -28,7 +28,7 @@ function invokeAction({ action, id, name, email, phone }) {
       break;
 
     case "remove":
-      removeContact(11).then((data) => {
+      removeContact(id).then((data) => {
         console.table(data);
       });
       break;
