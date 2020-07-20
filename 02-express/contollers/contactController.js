@@ -58,12 +58,14 @@ module.exports.deleteContact = async (req, res, next) => {
 module.exports.patchContact = async (req, res, next) => {
   try {
     const { contactId } = req.params;
-    console.log(req.body);
-    TODO: добавить проверку
-    if () {
+    const { name, email, phone } = req.body;
+    if (!name && !email && !phone) {
       return res.status(400).json({ message: "missing fields" });
     }
-    const update = await updateContact(contactId, body);
+    const update = await updateContact(contactId, req.body);
+    if (!update) {
+      return res.status(404).json({ message: "Not found" });
+    }
     return res.status(200).json(update);
   } catch (error) {
     next(error);
