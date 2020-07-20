@@ -58,8 +58,7 @@ module.exports.deleteContact = async (req, res, next) => {
 module.exports.patchContact = async (req, res, next) => {
   try {
     const { contactId } = req.params;
-    const { name, email, phone } = req.body;
-    if (!name && !email && !phone) {
+    if (!Object.keys(req.body).length) {
       return res.status(400).json({ message: "missing fields" });
     }
     const update = await updateContact(contactId, req.body);

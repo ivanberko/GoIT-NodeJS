@@ -58,7 +58,7 @@ async function addContact({ name, email, phone }) {
   }
 }
 
-async function updateContact(contactId, reqBody) {
+async function updateContact(contactId, updatedContact) {
   try {
     const data = await fsPromises.readFile(contactsPath, "utf8");
     const dataParse = JSON.parse(data);
@@ -71,7 +71,7 @@ async function updateContact(contactId, reqBody) {
 
     dataParse[findIndexContact] = {
       ...dataParse[findIndexContact],
-      ...reqBody,
+      ...updatedContact,
     };
     await fsPromises.writeFile(contactsPath, JSON.stringify(dataParse));
     return dataParse[findIndexContact];
