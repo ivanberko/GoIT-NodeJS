@@ -9,7 +9,7 @@ const {
 module.exports.getContacts = async (req, res, next) => {
   try {
     const list = await listContacts();
-    res.json(list);
+    res.json({ status: "ok", list });
   } catch (error) {
     next(error);
   }
@@ -22,7 +22,7 @@ module.exports.getContact = async (req, res, next) => {
     if (!contact) {
       return res.status(404).json({ message: "Not found" });
     }
-    return res.json(contact);
+    return res.json({ status: "ok", contact });
   } catch (error) {
     next(error);
   }
@@ -35,7 +35,7 @@ module.exports.createContact = async (req, res, next) => {
     if (!name || !email || !phone) {
       return res.status(400).json({ message: "missing required name field" });
     }
-    return res.status(201).json(createContact);
+    return res.status(201).json({ status: "ok", createContact });
   } catch (error) {
     next(error);
   }
@@ -49,7 +49,7 @@ module.exports.deleteContact = async (req, res, next) => {
       return res.status(404).json({ message: "Not found" });
     }
     await removeContact(contactId);
-    return res.status(200).json({ message: "contact deleted" });
+    return res.status(200).json({ status: "ok", message: "contact deleted" });
   } catch (error) {
     next(error);
   }
@@ -65,7 +65,7 @@ module.exports.patchContact = async (req, res, next) => {
     if (!update) {
       return res.status(404).json({ message: "Not found" });
     }
-    return res.status(200).json(update);
+    return res.status(200).json({ status: "ok", update });
   } catch (error) {
     next(error);
   }
