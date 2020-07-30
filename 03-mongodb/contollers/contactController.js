@@ -6,7 +6,7 @@ const {
   updateContact,
 } = require("../services/contacts");
 
-module.exports.getContacts = async (req, res, next) => {
+getContacts = async (req, res, next) => {
   try {
     const list = await listContacts();
     res.json({ status: "ok", list });
@@ -15,9 +15,9 @@ module.exports.getContacts = async (req, res, next) => {
   }
 };
 
-module.exports.getContact = async (req, res, next) => {
+getContact = async (req, res, next) => {
   try {
-    const { contactId } = req.params;
+    const contactId = Number(req.params.contactId);
     const contact = await getContactById(contactId);
     if (!contact) {
       return res.status(404).json({ message: "Not found" });
@@ -28,7 +28,7 @@ module.exports.getContact = async (req, res, next) => {
   }
 };
 
-module.exports.createContact = async (req, res, next) => {
+createContact = async (req, res, next) => {
   try {
     const { name, email, phone } = req.body;
     const createContact = await addContact(req.body);
@@ -41,9 +41,9 @@ module.exports.createContact = async (req, res, next) => {
   }
 };
 
-module.exports.deleteContact = async (req, res, next) => {
+deleteContact = async (req, res, next) => {
   try {
-    const { contactId } = req.params;
+    const contactId = Number(req.params.contactId);
     const findContactById = await getContactById(contactId);
     if (!findContactById) {
       return res.status(404).json({ message: "Not found" });
@@ -55,9 +55,9 @@ module.exports.deleteContact = async (req, res, next) => {
   }
 };
 
-module.exports.patchContact = async (req, res, next) => {
+patchContact = async (req, res, next) => {
   try {
-    const { contactId } = req.params;
+    const contactId = Number(req.params.contactId);
     if (!Object.keys(req.body).length) {
       return res.status(400).json({ message: "missing fields" });
     }
@@ -69,4 +69,12 @@ module.exports.patchContact = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+module.exports = {
+  getContacts,
+  getContact,
+  createContact,
+  deleteContact,
+  patchContact,
 };

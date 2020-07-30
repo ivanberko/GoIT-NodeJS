@@ -17,7 +17,7 @@ async function getContactById(contactId) {
   try {
     const data = await fsPromises.readFile(contactsPath, "utf8");
     const dataParse = JSON.parse(data);
-    return dataParse.find((contact) => contact.id === +contactId);
+    return dataParse.find((contact) => contact.id === contactId);
   } catch (error) {
     console.log(error);
   }
@@ -28,7 +28,7 @@ async function removeContact(contactId) {
     const data = await fsPromises.readFile(contactsPath, "utf8");
     const dataParse = JSON.parse(data);
     const deleteContact = dataParse.filter(
-      (contact) => contact.id !== +contactId
+      (contact) => contact.id !== contactId
     );
     await fsPromises.writeFile(contactsPath, JSON.stringify(deleteContact));
     return deleteContact;
@@ -63,7 +63,7 @@ async function updateContact(contactId, updatedContact) {
     const data = await fsPromises.readFile(contactsPath, "utf8");
     const dataParse = JSON.parse(data);
     const findIndexContact = await dataParse.findIndex(
-      (contact) => contact.id === +contactId
+      (contact) => contact.id === contactId
     );
     if (findIndexContact === -1) {
       return;
