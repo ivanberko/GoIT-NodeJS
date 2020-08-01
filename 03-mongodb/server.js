@@ -1,7 +1,8 @@
-const createError = require("http-errors");
 const express = require("express");
 const logger = require("morgan");
 const cors = require("cors");
+const mongoose = require("mongoose");
+require("dotenv").config();
 
 const contactsRouter = require("./routes/contacts");
 
@@ -13,6 +14,22 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 
 app.use("/contacts", contactsRouter);
+
+const initDataBase = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_DB_URL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useFindAndModify: false,
+    });
+    console.log('"Database connection successful"');
+  } catch (error) {
+    console.log(error);
+    process.exit(1);
+  }
+};
+
+initDataBase();
 
 // error handler
 app.use(function (err, req, res, next) {
