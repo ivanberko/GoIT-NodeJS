@@ -53,13 +53,14 @@ patchContact = async (req, res, next) => {
     if (!Object.keys(req.body).length) {
       return res.status(400).json({ message: "missing fields" });
     }
-    const update = await contactModel.findByIdAndUpdate(contactId, {
-      $set: req.body,
-    });
+    const update = await contactModel.findContactByIdAndUpdate(
+      contactId,
+      req.body
+    );
     if (!update) {
       return res.status(404).json({ message: "Not found" });
     }
-    return res.status(200).json({ status: "ok", message: "contact update" });
+    return res.status(200).json({ status: "ok", update });
   } catch (error) {
     next(error);
   }
