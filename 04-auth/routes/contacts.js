@@ -59,5 +59,7 @@ router.patch(
   validateUpdateContact,
   contactController.patchContact
 );
+// TODO: довавить роут
+router.get("/current");
 
 module.exports = router;

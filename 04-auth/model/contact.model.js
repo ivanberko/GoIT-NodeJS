@@ -11,7 +11,7 @@ const contactSchema = new Schema({
 });
 
 // custom method for  mongoose
-async function findContactByIdAndUpdate(contactId, params) {
+function findContactByIdAndUpdate(contactId, params) {
   return this.findByIdAndUpdate(contactId, { $set: params }, { new: true });
 }
 

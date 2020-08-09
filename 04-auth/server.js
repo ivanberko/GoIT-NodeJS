@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 
 const contactsRouter = require("./routes/contacts");
+const authRouter = require("./routes/auth");
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 
 app.use("/contacts", contactsRouter);
+app.use("/auth", authRouter);
 
 const initDataBase = async () => {
   try {
