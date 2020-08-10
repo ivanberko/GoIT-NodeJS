@@ -2,7 +2,9 @@ const express = require("express");
 const logger = require("morgan");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const passport = require("passport");
 require("dotenv").config();
+require("./passport").initializeStrategies();
 
 const contactsRouter = require("./routes/contacts");
 const authRouter = require("./routes/auth");
@@ -13,6 +15,8 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use("/contacts", contactsRouter);
 app.use("/auth", authRouter);

@@ -2,6 +2,8 @@ const passport = require("passport");
 const JwtStrategy = require("passport-jwt").Strategy;
 const { ExtractJwt } = require("passport-jwt");
 const LocalStrategy = require("passport-local").Strategy;
+const bcrypt = require("bcrypt");
+const userModel = require("../model/userModel");
 
 const localStrategy = () => {
   passport.serializeUser((user, cb) => {
@@ -18,21 +20,24 @@ const localStrategy = () => {
         passwordField: "password",
       },
       (email, password, done) => {
-        const hashPassword = encryptPassword(password);
-        User.findOne(
-          { email: email.toLocaleLowerCase(), password: hashPassword },
-          (err, user) => {
-            if (err) {
-              return done(err);
-            }
-            if (!user) {
-              return done(null, false, {
-                message: "Incorrect email or password",
-              });
-            }
-            return done(null, user, { message: "Logged In Successfully" });
+        userModel.findOne({ email: email.toLocaleLowerCase() }, (err, user) => {
+          if (err) {
+            return done(err);
           }
-        );
+          if (!user) {
+            return done(null, false, {
+              message: "Incorrect email or password",
+            });
+          }
+          bcrypt.compare(password, user.password, function (err, result) {
+            if (result) {
+              return done(null, user, { message: "Logged In Successfully" });
+            }
+            return done(null, false, {
+              message: "Incorrect email or password",
+            });
+          });
+        });
       }
     )
   );
@@ -43,7 +48,7 @@ const jwtStrategy = () => {
     new JwtStrategy(
       {
         jwtFromRequest: ExtractJwt.fromHeader("jwtauthorization"),
-        secretOrKey: config.get("jwt_secret"),
+        secretOrKey: process.env.JWT_SECRET,
       },
       (jwtPayload, cb) =>
         User.findOne({ _id: jwtPayload._id })
