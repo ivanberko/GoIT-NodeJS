@@ -6,8 +6,10 @@ const passport = require("passport");
 require("dotenv").config();
 require("./passport").initializeStrategies();
 
+// Router
 const contactsRouter = require("./routes/contacts");
 const authRouter = require("./routes/auth");
+const usersRouter = require("./routes/users");
 
 const app = express();
 
@@ -18,8 +20,19 @@ app.use(cors());
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Router
 app.use("/contacts", contactsRouter);
 app.use("/auth", authRouter);
+app.use("/users", usersRouter);
+
+// app.post('/auth/logout', (req, res) => {
+//   req.logout();
+//   res.json({
+//     success: true,
+//     status: 200,
+//   });
+// });
+
 
 const initDataBase = async () => {
   try {

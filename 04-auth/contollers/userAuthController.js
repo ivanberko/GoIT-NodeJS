@@ -33,16 +33,37 @@ const login = async (req, res, next) => {
         res.send(err);
       }
       const token = JWT.sign(user.toJSON(), process.env.JWT_SECRET);
-      await userModel.findByIdAndUpdate(user._id, { token });
+      await userModel.findByIdAndUpdate(user._id, { $set: { token } });
+      const { email, subscription } = user;
       return res.json({
         token,
-        user: { email: user.email, subscription: user.subscription },
+        user: { email, subscription },
       });
     });
   })(req, res);
 };
 
+const logout = async (req, res, next) => {
+  try {
+    const { _id } = req.user;
+    const user = await userModel.findByIdAndUpdate(_id, {
+      $set: { token: null },
+    });
+
+    if (!user) {
+      return res.status(401).json({
+        message: "Not authorized",
+      });
+    }
+
+    return res.status(204).send();
+  } catch (error) {
+    next();
+  }
+};
+
 module.exports = {
   signUp,
   login,
+  logout,
 };

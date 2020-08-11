@@ -47,11 +47,11 @@ const jwtStrategy = () => {
   passport.use(
     new JwtStrategy(
       {
-        jwtFromRequest: ExtractJwt.fromHeader("jwtauthorization"),
+        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
         secretOrKey: process.env.JWT_SECRET,
       },
       (jwtPayload, cb) =>
-        User.findOne({ _id: jwtPayload._id })
+      userModel.findOne({ _id: jwtPayload._id })
           .then((user) => cb(null, user))
           .catch((err) => cb(err))
     )

@@ -1,6 +1,8 @@
 const Joi = require("@hapi/joi");
 const bcrypt = require("bcrypt");
 const userModel = require("../model/userModel");
+const jwt = require("jsonwebtoken");
+const passport = require("passport");
 
 const validateRegister = async (req, res, next) => {
   const validationRules = Joi.object({
@@ -37,7 +39,42 @@ const validateLogin = async (req, res, next) => {
   next();
 };
 
+const authorize = async (req, res, next) => {
+  try {
+    const authorizationHeader = req.get("Authorization");
+    if (!authorizationHeader) {
+      next({ status: 401, message: "Not authorized" });
+    }
+    const token = authorizationHeader.replace("Bearer ", "");
+
+    let userId;
+    try {
+      userId = await jwt.verify(token, process.env.JWT_SECRET)._id;
+    } catch (err) {
+      next({ status: 401, message: "User not authorized" });
+    }
+
+    const user = await userModel.findById(userId);
+    if (!user) {
+      next({ status: 401, message: "Not authorized" });
+    }
+
+    req.user = user;
+    req.token = token;
+
+    next();
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Validate through passport
+// const passportAuthorize = () =>
+//   passport.authenticate("jwt", { session: false });
+
 module.exports = {
   validateRegister,
   validateLogin,
+  authorize,
+  // passportAuthorize,
 };
