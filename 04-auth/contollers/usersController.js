@@ -17,6 +17,23 @@ const currentUser = async (req, res, next) => {
   }
 };
 
+const updateSubscription = async (req, res, next) => {
+  try {
+    const { _id } = req.user;
+    const user = await userModel.findByIdAndUpdate(
+      _id,
+      { $set: req.body },
+      { new: true }
+    );
+
+    const { subscription, email } = user;
+    return res.status(200).json({ subscription, email });
+  } catch (error) {
+    next();
+  }
+};
+
 module.exports = {
   currentUser,
+  updateSubscription,
 };

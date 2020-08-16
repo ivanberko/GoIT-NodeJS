@@ -5,7 +5,22 @@ const {
 
 getContacts = async (req, res, next) => {
   try {
-    const list = await contactModel.find();
+    const { page, limit, sub } = req.query;
+    const skip = page * limit - limit;
+    const query = contactModel.find();
+
+    query.skip(skip);
+    query.limit(Number(limit));
+
+    if (sub) {
+      const filterSub = await contactModel.aggregate([
+        { $match: { subscription: { $in: [sub] } } },
+      ]);
+      return res.json({ status: "ok", filterSub });
+    }
+
+    const list = await query.exec();
+
     return res.json({ status: "ok", list });
   } catch (error) {
     next(error);
