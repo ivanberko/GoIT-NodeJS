@@ -81,7 +81,7 @@ const validateSubscription = async (req, res, next) => {
   next();
 };
 
-// Validate through passport
+// ----------------------------Validate through passport-------------------------
 // const passportAuthorize = () =>
 //   passport.authenticate("jwt", { session: false });
 

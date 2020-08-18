@@ -1,16 +1,35 @@
+const path = require("path");
+const fs = require("fs");
+const moveFile = require("move-file");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
 const JWT = require("jsonwebtoken");
+const faker = require("faker");
+const tmp = require("tmp-promise");
+const rp = require("request-promise");
 const userModel = require("../model/userModel");
 
 const signUp = async (req, res, next) => {
   try {
+    const avatarURI = faker.image.avatar();
+    const fileAvatar = rp(avatarURI);
+    const ext = path.extname(avatarURI);
+
+    const createTmp = await tmp.file({
+      postfix: ext,
+      tmpdir: path.resolve("./public/images"),
+    });
+
+    fileAvatar.pipe(fs.createWriteStream(createTmp.path)).on("close", () => {});
+    const fileAvatarName = path.basename(createTmp.path);
+
     const { email, password, subscription } = req.body;
     const hash = await bcrypt.hash(password, Number(process.env.SALT));
     await userModel.create({
       email,
       password: hash,
       subscription,
+      avatarURL: `http://localhost:5000/images/${fileAvatarName}`,
     });
     return res.status(201).json({
       user: {
