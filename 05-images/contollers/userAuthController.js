@@ -1,35 +1,21 @@
-const path = require("path");
-const fs = require("fs");
-const moveFile = require("move-file");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
 const JWT = require("jsonwebtoken");
-const faker = require("faker");
-const tmp = require("tmp-promise");
-const rp = require("request-promise");
 const userModel = require("../model/userModel");
+
+const { getPathNewAvatar } = require("../helpers/fileHelpers");
 
 const signUp = async (req, res, next) => {
   try {
-    const avatarURI = faker.image.avatar();
-    const fileAvatar = rp(avatarURI);
-    const ext = path.extname(avatarURI);
-
-    const createTmp = await tmp.file({
-      postfix: ext,
-      tmpdir: path.resolve("./public/images"),
-    });
-
-    fileAvatar.pipe(fs.createWriteStream(createTmp.path)).on("close", () => {});
-    const fileAvatarName = path.basename(createTmp.path);
-
     const { email, password, subscription } = req.body;
     const hash = await bcrypt.hash(password, Number(process.env.SALT));
+    const avatar = await getPathNewAvatar();
+
     await userModel.create({
       email,
       password: hash,
       subscription,
-      avatarURL: `http://localhost:5000/images/${fileAvatarName}`,
+      avatarURL: `http://localhost:5000/images/${avatar}`,
     });
     return res.status(201).json({
       user: {
@@ -51,8 +37,9 @@ const login = async (req, res, next) => {
       if (err) {
         res.send(err);
       }
+
       const token = JWT.sign(user.toJSON(), process.env.JWT_SECRET);
-      await userModel.findByIdAndUpdate(user._id, { $set: { token } });
+      await userModel.findByIdAndUpdate(user._id, { $set: { token } }); // FIXME:конкатенирует token !!!!!!!
       const { email, subscription } = user;
       return res.json({
         token,

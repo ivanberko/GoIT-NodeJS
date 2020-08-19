@@ -3,10 +3,9 @@ const logger = require("morgan");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const passport = require("passport");
-const multer = require("multer");
+
 require("dotenv").config();
 require("./passport").initializeStrategies();
-
 
 // Router
 const contactsRouter = require("./routes/contacts");
@@ -14,21 +13,6 @@ const authRouter = require("./routes/auth");
 const usersRouter = require("./routes/users");
 
 const app = express();
-
-// const storage = multer.diskStorage({
-//   destination: "tmp",
-//   filename: function (req, file, cb) {
-//     cb(null, file.fieldname + "-" + Date.now());
-//   },
-// });
-
-// const upload = multer({ storage: storage });
-
-// app.post("/images", upload.single("fieldname"), (req, res, next) => {
-//   console.log(req.file);
-//   console.log(req.body);
-//   return status(200).send();
-// });
 
 app.use(express.static("public"));
 app.use(logger("dev"));
