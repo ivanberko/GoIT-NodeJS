@@ -39,7 +39,7 @@ const login = async (req, res, next) => {
       }
 
       const token = JWT.sign(user.toJSON(), process.env.JWT_SECRET);
-      await userModel.findByIdAndUpdate(user._id, { $set: { token } }); // FIXME:конкатенирует token !!!!!!!
+      await userModel.findByIdAndUpdate(user._id, { $set: { token } });
       const { email, subscription } = user;
       return res.json({
         token,

@@ -41,12 +41,9 @@ const updateAvatar = async (req, res, next) => {
     const { _id } = req.user;
     const { filename } = req.file;
 
-    const olFfileAvatarName = path.basename(req.user.avatarURL);
+    const oldFileAvatarName = path.basename(req.user.avatarURL);
     await fsPromises.unlink(
-      path.resolve(`./public/images/${olFfileAvatarName}`),
-      (err) => {
-        if (err) next(err);
-      }
+      path.resolve(`./public/images/${oldFileAvatarName}`)
     );
 
     const newFileAvatarPublic = await fsPromises.readFile(req.file.path);
@@ -55,9 +52,7 @@ const updateAvatar = async (req, res, next) => {
       newFileAvatarPublic
     );
 
-    await fsPromises.unlink(path.resolve(`./tmp/${filename}`), (err) => {
-      if (err) next(err);
-    });
+    await fsPromises.unlink(path.resolve(`./tmp/${filename}`));
 
     const user = await userModel.findByIdAndUpdate(
       _id,

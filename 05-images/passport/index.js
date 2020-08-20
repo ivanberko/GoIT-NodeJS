@@ -20,24 +20,29 @@ const localStrategy = () => {
         passwordField: "password",
       },
       (email, password, done) => {
-        userModel.findOne({ email: email.toLocaleLowerCase() }, (err, user) => {
-          if (err) {
-            return done(err);
-          }
-          if (!user) {
-            return done(null, false, {
-              message: "Incorrect email or password",
-            });
-          }
-          bcrypt.compare(password, user.password, function (err, result) {
-            if (result) {
-              return done(null, user, { message: "Logged In Successfully" });
+        userModel.findOne(
+          { email: email.toLocaleLowerCase() },
+          "-token",
+          (err, user) => {
+            if (err) {
+              return done(err);
             }
-            return done(null, false, {
-              message: "Incorrect email or password",
+            console.log(user);
+            if (!user) {
+              return done(null, false, {
+                message: "Incorrect email or password",
+              });
+            }
+            bcrypt.compare(password, user.password, function (err, result) {
+              if (result) {
+                return done(null, user, { message: "Logged In Successfully" });
+              }
+              return done(null, false, {
+                message: "Incorrect email or password",
+              });
             });
-          });
-        });
+          }
+        );
       }
     )
   );
@@ -51,7 +56,8 @@ const jwtStrategy = () => {
         secretOrKey: process.env.JWT_SECRET,
       },
       (jwtPayload, cb) =>
-      userModel.findOne({ _id: jwtPayload._id })
+        userModel
+          .findOne({ _id: jwtPayload._id })
           .then((user) => cb(null, user))
           .catch((err) => cb(err))
     )
