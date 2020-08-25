@@ -5,7 +5,7 @@ const userSchema = new Schema({
   email: String,
   password: String,
   avatarURL: String,
-  verificationToken: "",
+  verificationToken: String,
   subscription: {
     type: String,
     enum: ["free", "pro", "premium"],
